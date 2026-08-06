@@ -261,19 +261,30 @@ document.body.focus();
 
 document.addEventListener("keydown",function(e){
 
+let key = e.key.toUpperCase();
 
-let key=e.key.toUpperCase();
+
+// 兼容数字键盘
+if(e.code.startsWith("Digit")){
+    key = e.code.replace("Digit","");
+}
+
+if(e.code.startsWith("Numpad")){
+    key = e.code.replace("Numpad","");
+}
+
+
+// 防止浏览器快捷键
+e.preventDefault();
 
 
 if(keys[key]){
 
-playEffect(keys[key]);
+    playEffect(keys[key]);
 
 }
 
-
 });
-
 
 
 </script>
