@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YouTube Food Live Overlay</title>
+
+<style>
+html,body{
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background:transparent;
+    font-family:Arial, sans-serif;
+}
+
+#effectBox{
+    position:absolute;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+}
+
+.effect{
+    position:absolute;
+    font-size:80px;
+    animation:fly 3s ease-out forwards;
+}
+
+.text{
+    position:absolute;
+    top:45%;
+    width:100%;
+    text-align:center;
+    font-size:50px;
+    font-weight:bold;
+    color:white;
+    text-shadow:
+    0 0 10px black,
+    0 0 20px orange;
+    animation:textShow 3s forwards;
+}
+
+
+@keyframes fly{
+
+0%{
+    transform:translateY(100vh) scale(0.3);
+    opacity:0;
+}
+
+30%{
+    opacity:1;
+}
+
+100%{
+    transform:
+    translateY(-100px)
+    rotate(360deg)
+    scale(1.5);
+
+    opacity:0;
+}
+
+}
+
+
+@keyframes textShow{
+
+0%{
+    transform:scale(0);
+    opacity:0;
+}
+
+30%{
+    transform:scale(1.2);
+    opacity:1;
+}
+
+100%{
+    opacity:0;
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div id="effectBox"></div>
+
+
+<script>
+
+
+// =======================
+// 关键词设置
+// =======================
+
+const effects={
+
+fire:{
+emoji:"🔥",
+text:"FIRE 🔥"
+},
+
+love:{
+emoji:"❤️",
+text:"LOVE ❤️"
+},
+
+cheese:{
+emoji:"🧀",
+text:"CHEESE TIME!"
+},
+
+egg:{
+emoji:"🥚",
+text:"EGG POWER!"
+},
+
+noodle:{
+emoji:"🍜",
+text:"NOODLE MASTER!"
+},
+
+dumpling:{
+emoji:"🥟",
+text:"DUMPLING RAIN!"
+},
+
+bbq:{
+emoji:"🍖",
+text:"BBQ FIRE!"
+},
+
+dragon:{
+emoji:"🐉",
+text:"DRAGON ATTACK!"
+},
+
+panda:{
+emoji:"🐼",
+text:"PANDA LOVE!"
+},
+
+666:{
+emoji:"💰",
+text:"SUPER CHAT!"
+},
+
+888:{
+emoji:"🎆",
+text:"AMAZING!"
+}
+
+};
+
+
+// =======================
+// 播放动画
+// =======================
+
+
+function playEffect(key){
+
+let data=effects[key];
+
+if(!data)return;
+
+
+let box=document.getElementById("effectBox");
+
+
+// emoji
+
+for(let i=0;i<8;i++){
+
+let e=document.createElement("div");
+
+e.className="effect";
+
+e.innerHTML=data.emoji;
+
+
+e.style.left=Math.random()*90+"%";
+
+e.style.animationDelay=
+Math.random()*0.5+"s";
+
+
+box.appendChild(e);
+
+
+setTimeout(()=>{
+e.remove();
+},3000);
+
+
+}
+
+
+//文字
+
+let t=document.createElement("div");
+
+t.className="text";
+
+t.innerHTML=data.text;
+
+
+box.appendChild(t);
+
+
+setTimeout(()=>{
+t.remove();
+},3000);
+
+
+}
+
+
+// =======================
+// 测试关键词
+// =======================
+
+
+document.addEventListener("keydown", function(e){
+
+let key = e.key.toLowerCase();
+
+let test = {
+"f":"fire",
+"l":"love",
+"c":"cheese",
+"n":"noodle",
+"e":"egg",
+"6":"666",
+"8":"888"
+};
+
+
+if(test[key]){
+    playEffect(test[key]);
+}
+
+});
+
+
+// 测试:
+// 键盘按 fire 无法触发
+// 输入数字或字母测试
+
+
+</script>
+
+</body>
+</html>
