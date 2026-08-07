@@ -1,101 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>YouTube Food Live Overlay</title>
-
-<style>
-html,body{
-    margin:0;
-    padding:0;
-    overflow:hidden;
-    background:transparent;
-    font-family:Arial,sans-serif;
-}
-
-#effectBox{
-    width:100%;
-    height:100%;
-    position:absolute;
-    pointer-events:none;
-}
-
-.effect{
-    position:absolute;
-    font-size:90px;
-    animation:fly 3s ease-out forwards;
-}
-
-.text{
-    position:absolute;
-    top:45%;
-    width:100%;
-    text-align:center;
-    font-size:55px;
-    font-weight:bold;
-    color:white;
-    text-shadow:
-    0 0 10px black,
-    0 0 25px orange;
-    animation:textShow 3s forwards;
-}
-
-
-@keyframes fly{
-
-0%{
-transform:translateY(100vh) scale(.3);
-opacity:0;
-}
-
-30%{
-opacity:1;
-}
-
-100%{
-transform:
-translateY(-100px)
-rotate(360deg)
-scale(1.5);
-opacity:0;
-}
-
-}
-
-
-@keyframes textShow{
-
-0%{
-transform:scale(0);
-opacity:0;
-}
-
-30%{
-transform:scale(1.2);
-opacity:1;
-}
-
-100%{
-opacity:0;
-}
-
-}
-
-</style>
-
-</head>
-
-
-<body tabindex="0">
-
-
-<div id="effectBox"></div>
-
-
 <script>
 
-
 const effects={
+
+welcome:{
+emoji:"👋",
+text:"欢迎来到直播间"
+},
 
 fire:{
 emoji:"🔥",
@@ -105,43 +15,13 @@ text:"FIRE COOKING 🔥"
 love:{
 emoji:"❤️",
 text:"LOVE FOOD ❤️"
-},
-
-cheese:{
-emoji:"🧀",
-text:"CHEESE TIME!"
-},
-
-egg:{
-emoji:"🥚",
-text:"EGG POWER!"
-},
-
-noodle:{
-emoji:"🍜",
-text:"NOODLE MASTER!"
-},
-
-bbq:{
-emoji:"🍖",
-text:"BBQ FIRE!"
-},
-
-dragon:{
-emoji:"🐉",
-text:"DRAGON ATTACK!"
-},
-
-panda:{
-emoji:"🐼",
-text:"PANDA LOVE!"
 }
 
 };
 
 
 
-function playEffect(key){
+function playEffect(key,username=""){
 
 let data=effects[key];
 
@@ -151,7 +31,7 @@ if(!data)return;
 let box=document.getElementById("effectBox");
 
 
-// emoji数量
+// emoji掉落
 
 for(let i=0;i<10;i++){
 
@@ -166,7 +46,6 @@ e.style.left=Math.random()*90+"%";
 e.style.animationDelay=
 Math.random()*0.5+"s";
 
-
 box.appendChild(e);
 
 
@@ -178,13 +57,24 @@ e.remove();
 
 
 
-//文字
+// 文字
 
 let t=document.createElement("div");
 
 t.className="text";
 
+
+if(username){
+
+t.innerHTML=
+data.text+
+"<br><span style='font-size:35px'>Welcome "+username+"!</span>";
+
+}else{
+
 t.innerHTML=data.text;
+
+}
 
 
 box.appendChild(t);
@@ -199,96 +89,100 @@ t.remove();
 
 
 
-
-// ====================
-// 快捷键设置
-// ====================
-
-
-const keys={
+// ==========================
+// Upstream 弹幕连接
+// ==========================
 
 
-// F键
-"F1":"fire",
-"F2":"love",
-"F3":"cheese",
-"F4":"egg",
-"F5":"noodle",
-"F6":"bbq",
-"F7":"dragon",
-"F8":"panda",
+// 把这里换成你的 Upstream 地址
+
+let socket = new WebSocket(
+"ws://localhost:1234"
+);
 
 
-// 数字键
 
-"1":"fire",
-"2":"love",
-"3":"cheese",
-"4":"egg",
-"5":"noodle",
-"6":"bbq",
-"7":"dragon",
-"8":"panda"
+socket.onopen=function(){
+
+console.log("Chat Connected");
 
 };
 
 
 
 
-// 自动获取焦点
+socket.onmessage=function(event){
 
-window.onload=function(){
 
-document.body.focus();
+console.log(event.data);
 
-window.focus();
+
+// 接收弹幕
+
+let data;
+
+
+try{
+
+data=JSON.parse(event.data);
+
+}
+
+catch(e){
+
+return;
 
 }
 
 
 
-// 点击重新获取焦点
-
-document.body.onclick=function(){
-
-document.body.focus();
-
-}
-
+let msg=
+(data.message ||
+ data.text ||
+ data.content ||
+ "")
+.toLowerCase();
 
 
-// 键盘监听
 
-document.addEventListener("keydown",function(e){
-
-let key = e.key.toUpperCase();
-
-
-// 兼容数字键盘
-if(e.code.startsWith("Digit")){
-    key = e.code.replace("Digit","");
-}
-
-if(e.code.startsWith("Numpad")){
-    key = e.code.replace("Numpad","");
-}
+let username=
+data.username ||
+data.author ||
+data.name ||
+"Guest";
 
 
-// 防止浏览器快捷键
-e.preventDefault();
 
+// 欢迎关键词
 
-if(keys[key]){
+if(
 
-    playEffect(keys[key]);
+msg.includes("hello") ||
+msg.includes("hi") ||
+msg.includes("你好") ||
+msg.includes("哈喽")
+
+){
+
+playEffect(
+"welcome",
+username
+);
 
 }
 
-});
+
+
+};
+
+
+
+
+socket.onerror=function(){
+
+console.log("Chat Error");
+
+};
 
 
 </script>
-
-
-</body>
-</html>
